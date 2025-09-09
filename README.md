@@ -1,6 +1,6 @@
 <div align="center">
     <div>
-        <img height="150px" src="90MinutesZoneLogo.png" alt="CalisFun Logo"/>
+        <img height="150px" src="assets/90MinutesZoneLogo.png" alt="90MinutesZone Logo"/>
     </div>
     <div>
             <h3><b>90minutesZone</b></h3>
