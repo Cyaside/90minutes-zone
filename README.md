@@ -1,6 +1,6 @@
 <div align="center">
     <div>
-        <img height="150px" src="assets/90MinutesZoneLogo.png" alt="90MinutesZone Logo"/>
+        <img height="150px" src="static/assets/90MinutesZoneLogo.png" alt="90MinutesZone Logo"/>
     </div>
     <div>
             <h3><b>90minutesZone</b></h3>
@@ -23,4 +23,5 @@ https://tristan-rasheed-footballnews.pbp.cs.ui.ac.id/
 
 ## ‼️ Markdown
 
-1️⃣ [Tugas 2 Markdown](tugas2.md)
+1️⃣ [Tugas 2 Markdown](markdowns/tugas2.md)  
+2️⃣ [Tugas 3 Markdown](markdowns/tugas3.md)
