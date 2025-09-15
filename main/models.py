@@ -3,13 +3,25 @@ import uuid
 
 
 class Product(models.Model):
+
+    # CATEGORY_CHOICES = [
+    #     ('footwear', 'Footwear'),
+    #     ('kit', 'Kit'),
+    #     ('shorts and pants', 'Shorts and Pants'),
+    #     ('jackets and sportswear', 'Jackets and Sportswear'),
+    #     ('tracksuits', 'Tracksuits'),
+    #     ('others', 'Others'),
+    # ]
+        
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     price = models.IntegerField()
     description = models.TextField()
-    thumbnail = models.URLField()
+    thumbnail = models.URLField(blank=True, null=True)
     category = models.CharField(max_length=100)
     is_featured = models.BooleanField(default=False)
+    # views = models.PositiveIntegerField(default=0)
+    # brand = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.name

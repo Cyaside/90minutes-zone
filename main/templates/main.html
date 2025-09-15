@@ -1,55 +1,102 @@
-
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Zone</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>90Minutes Zone — Product Zone</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="{% static 'assets/90MinutesZoneLogo.png' %}">
 </head>
-<body class="bg-gray-50 min-h-screen">
-  <!-- Bagian Navbar -->
+
+<body class="bg-gray-50 min-h-screen text-gray-900 font-sans">
+  <!-- Navbar-->
   <nav class="bg-white shadow mb-8">
     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-  <img src="{% static 'assets/90MinutesZoneLogo.png' %}" alt="Logo" class="h-10 w-10 rounded-full">
-        <span class="font-bold text-xl text-gray-800">90Minutes Zone</span>
+      <div class="flex items-center gap-3">
+        <img src="{% static 'assets/90MinutesZoneLogo.png' %}" alt="90Minutes Zone logo" class="h-10 w-10 rounded-full">
+        <span class="font-bold text-xl text-black">90Minutes Zone</span>
       </div>
-      <div class="space-x-4">
-        <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
-        <a href="{% url 'main:create_product' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">+ Add Product</a>
+      <div class="flex items-center gap-4">
+        <a href="/" class="text-black hover:text-gray-700 font-medium">Home</a>
+        <a href="{% url 'main:create_product' %}" class="bg-black text-white px-4 py-2 rounded border border-black hover:bg-white hover:text-black transition">+ Add Product</a>
       </div>
     </div>
   </nav>
 
-  <!-- Bagian Main Content -->
-  <div class="container mx-auto px-4">
-    <div class="bg-white rounded-lg shadow p-6">
-      <h1 class="text-2xl font-bold mb-4 text-blue-700">Product List</h1>
+  <!-- Utama kalau bisa di ref nanti -->
+  <main class="container mx-auto px-4">
+    
+    <!-- Bagian Featured Products -->
+    {% with featured_products=product_list|dictsort:"-is_featured" %}
+    {% if product_list|length > 0 %}
+      <section class="bg-white rounded-lg shadow p-6 mb-8">
+        <h1 class="text-2xl font-bold mb-4 text-black">Featured Products</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for product in product_list %}
+            {% if product.is_featured %}
+              <article class="bg-gray-100 rounded-lg p-4 shadow hover:shadow-lg transition">
+                {% if product.thumbnail %}
+                  <div class="mb-3 overflow-hidden rounded">
+                    <img src="{% if product.thumbnail.url %}{{ product.thumbnail.url }}{% else %}{{ product.thumbnail }}{% endif %}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                  </div>
+                {% endif %}
+                <h2 class="text-lg font-semibold text-gray-800 mb-1">
+                  <a href="{% url 'main:product_detail' product.id %}" class="hover:underline">{{ product.name }}</a>
+                </h2>
+                <p class="text-sm text-gray-600 mb-2">
+                  {{ product.get_category_display }}
+                  <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-300 text-black">Featured</span>
+                </p>
+                <p class="text-gray-700 mb-3">{{ product.description|truncatewords:25 }}...</p>
+                <div class="flex items-center justify-between">
+                  <a href="{% url 'main:product_detail' product.id %}" class="bg-black text-white px-3 py-1 rounded border border-black hover:bg-white hover:text-black transition">View Details</a>
+                  <span class="text-sm font-semibold text-gray-900">Rp {{ product.price }}</span>
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Bagian All Prod -->
+    <section class="bg-white rounded-lg shadow p-6">
+      <h1 class="text-2xl font-bold mb-4 text-black">All Products</h1>
       {% if not product_list %}
-        <p class="text-gray-500">Belum ada data produk.</p>
+        <p class="text-gray-500">Belum ada produk</p>
       {% else %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for product in product_list %}
-            <div class="bg-gray-100 rounded-lg p-4 shadow hover:shadow-lg transition">
-              {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-40 object-cover rounded mb-3">
+            <article class="bg-gray-100 rounded-lg p-4 shadow hover:shadow-lg transition">
+              {% if product.thumbnail %}
+                <div class="mb-3 overflow-hidden rounded">
+                  <img src="{% if product.thumbnail.url %}{{ product.thumbnail.url }}{% else %}{{ product.thumbnail }}{% endif %}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                </div>
               {% endif %}
               <h2 class="text-lg font-semibold text-gray-800 mb-1">
                 <a href="{% url 'main:product_detail' product.id %}" class="hover:underline">{{ product.name }}</a>
               </h2>
-              <p class="text-sm text-gray-600 mb-2">{{ product.get_category_display }}{% if product.is_featured %} | <span class="text-yellow-600 font-bold">Featured</span>{% endif %}{% if product.is_hot %} | <span class="text-red-600 font-bold">Hot</span>{% endif %}</p>
-              <p class="text-gray-700 mb-3">{{ product.description|truncatewords:25 }}{% if product.description|length > 0 %}...{% endif %}</p>
-              <a href="{% url 'main:product_detail' product.id %}" class="inline-block bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">View Details</a>
-            </div>
+              <p class="text-sm text-gray-600 mb-2">
+                {{ product.get_category_display }}
+                {% if product.is_featured %}
+                  <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-300 text-black">Featured</span>
+                {% endif %}
+              </p>
+              <p class="text-gray-700 mb-3">{{ product.description|truncatewords:25 }}...</p>
+              <div class="flex items-center justify-between">
+                <a href="{% url 'main:product_detail' product.id %}" 
+                class="bg-black text-white px-3 py-1 rounded border border-black hover:bg-white hover:text-black transition">View Details</a>
+                <span class="text-sm font-semibold text-gray-900">Rp {{ product.price }}</span>
+              </div>
+            </article>
           {% endfor %}
         </div>
       {% endif %}
-    </div>
-  </div>
+    </section>
+
+  </main>
 </body>
 </html>
-
-
