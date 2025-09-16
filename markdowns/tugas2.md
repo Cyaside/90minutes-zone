@@ -6,7 +6,7 @@ Untuk step by stepnya tentu saya lakukan seperti yang ada di tutorial sebelumnya
 
 ## Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
 
-![Bagan alur sederhana django](static/assets/django1.png)
+![Bagan alur sederhana django](../static/django1.png)
 
 Berikut bagan alur sederhana django  
 sumber bagan : https://www.interviewbit.com/blog/django-architecture/
