@@ -6,12 +6,18 @@ from main.models import Product
 
 def show_main(request):
     product_list = Product.objects.all()
+    
+    products_by_category = [
+        (label, product_list.filter(category=key))
+        for key, label in Product.CATEGORY_CHOICES
+    ]
 
     context = {
         'npm' : '2406358472',
         'name': 'Tristan Rasheed Satria',
         'class': 'PBP C',
-        'product_list': product_list
+        'product_list': product_list,
+        'products_by_category': products_by_category,
     }
 
     return render(request, "main.html", context)
