@@ -53,7 +53,7 @@ def create_product(request):
         'form': form
     }
 
-    return render(request, "create_Product.html", context)
+    return render(request, "create_product.html", context)
 
 @login_required(login_url='/login')
 def show_product(request, id):
