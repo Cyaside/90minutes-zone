@@ -2,9 +2,9 @@
 {% load static %}
 {% block content %}
 <div class="w-full min-h-screen bg-gray-50 p-8">
-  <a href="/" class="inline-block mb-4 px-4 py-2 bg-black text-white rounded hover:bg-white hover:text-black hover:outline font-semibold transition">Back to Home</a>
+  <a href="{% url 'main:product_detail' product.id %}" class="inline-block mb-4 px-4 py-2 bg-black text-white rounded hover:bg-white hover:text-black hover:outline font-semibold transition">Back to Product</a>
   <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-bold text-black">Add Product</h1>
+    <h1 class="text-2xl font-bold text-black">Edit Product</h1>
     <img src="{% static '/90MinutesZoneLogo.png' %}" alt="Logo" class="h-10 w-auto">
   </div>
   <form method="POST" enctype="multipart/form-data" class="space-y-5">
@@ -39,7 +39,7 @@
       type="submit" 
       class="w-full text-white bg-black py-2 rounded hover:bg-white hover:text-black hover:outline hover:outline-black transition font-semibold"
     >
-      Add Product
+      Update Product
     </button>
   </form>
 </div>

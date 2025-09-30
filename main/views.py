@@ -24,17 +24,26 @@ def show_main(request):
 
     if filter_type == "all":
         product_list = Product.objects.all()
+        all_product = True
+        my_product = False
     else:
         product_list = Product.objects.filter(user=request.user)
+        all_product = False
+        my_product = True
+
+    featured_products = product_list.filter(is_featured=True)
 
     context = {
         'npm' : '2406358472',
         'name': 'Tristan Rasheed Satria',
         'class': 'PBP C',
         'product_list': product_list,
+        'featured_products': featured_products,
         'products_by_category': products_by_category,
         'last_login': request.COOKIES.get('last_login', 'Never'),
         'account_name': request.user.username,
+        'all_product': all_product,
+        'my_product': my_product,
     }
 
     return render(request, "main.html", context)
@@ -128,3 +137,36 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+
+@login_required(login_url='/login')
+def edit_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    if product.user != request.user:
+        return redirect('main:product_detail', id)
+
+    form = ProductForm(request.POST or None, instance=product)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Product updated.')
+        return redirect('main:product_detail', id)
+
+    context = {
+        'form': form,
+        'product': product,
+        'is_edit': True,
+    }
+
+    return render(request, "edit_product.html", context)
+
+@login_required(login_url='/login')
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    if product.user != request.user:
+        return redirect('main:product_detail', id)
+
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, 'Product deleted.')
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    return render(request, 'confirm_delete.html', {'product': product})

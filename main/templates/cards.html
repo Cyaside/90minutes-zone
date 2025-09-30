@@ -1,0 +1,44 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+	{% if products and products|length > 0 %}
+		{% for product in products %}
+			<div>
+				<article class="group relative bg-gray-100 rounded-lg p-4 shadow hover:shadow-lg transition flex flex-col h-full">
+					{% if product.thumbnail %}
+						<div class="mb-3 overflow-hidden rounded aspect-video bg-gray-200">
+							<img src="{% if product.thumbnail.url %}{{ product.thumbnail.url }}{% else %}{{ product.thumbnail }}{% endif %}" alt="{{ product.name }} thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+						</div>
+					{% else %}
+						<div class="mb-3 flex items-center justify-center aspect-video rounded bg-gray-200 text-gray-500 text-sm font-medium">No Image</div>
+					{% endif %}
+					<header class="mb-2">
+						<h2 class="text-lg font-semibold text-gray-800 leading-tight">
+							<a href="{% url 'main:product_detail' product.id %}" class="hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black rounded">{{ product.name }}</a>
+						</h2>
+						<p class="text-xs text-gray-600 mt-0.5">
+							{{ product.get_category_display }}
+							{% if product.is_featured %}
+								<span class="ml-2 align-middle text-[10px] font-semibold px-2 py-0.5 rounded-full bg-yellow-300 text-black">Featured</span>
+							{% endif %}
+						</p>
+					</header>
+					<p class="text-gray-700 text-sm mb-3 line-clamp-3">{{ product.description|truncatewords:25 }}...</p>
+					<div class="mt-auto flex items-center justify-between gap-2 pt-2">
+						<a href="{% url 'main:product_detail' product.id %}" class="bg-black text-white px-3 py-1 rounded border border-black hover:bg-white hover:text-black transition text-sm">View Details</a>
+						<span class="text-sm font-semibold text-gray-900">Rp {{ product.price }}</span>
+					</div>
+					<!-- Action Buttons -->
+					{% if user.is_authenticated and product.user == user %}
+						<div class="flex items-center justify-between pt-4 border-t border-gray-100">
+							<div class="flex space-x-2">
+								<a href="{% url 'main:edit_product' product.id %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">Edit</a>
+								<a href="{% url 'main:delete_product' product.id %}" class="text-red-600 hover:text-red-700 text-sm transition-colors">Delete</a>
+							</div>
+						</div>
+					{% endif %}
+				</article>
+			</div>
+		{% endfor %}
+	{% else %}
+		<div class="col-span-full text-center py-10 text-gray-600">{{ empty_message|default:"No products available." }}</div>
+	{% endif %}
+</div>

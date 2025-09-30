@@ -1,16 +1,25 @@
+{% extends 'base.html' %}
 {% load static %}
-<!doctype html>
+
+{% block meta %}
+<title>90MinutesZone</title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<!-- <!doctype html>
 <html lang="id">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="{% static '/90MinutesZoneLogo.png' %}">
-</head>
+</head> -->
 
-<body class="bg-gray-50 min-h-screen text-gray-900 font-sans">
+<div class="bg-gray-50 w-full pt-16 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- Navbar-->
-  <nav class="bg-white shadow mb-8">
+  <!-- <nav class="bg-white shadow mb-8">
     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <img src="{% static '/90MinutesZoneLogo.png' %}" alt="90Minutes Zone logo" class="h-10 w-10 rounded-full">
@@ -26,81 +35,23 @@
         {% endif %}
       </div>
     </div>
-  </nav>
-
+  </nav> -->
+      <!-- Header Section -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome to 90MinutesZone!</h1>
+      <p class="text-gray-600 mb-4">Your one-stop shop for exclusive football merchandise, gear, and collectibles</p>
+    </div>
+    
   <!-- Utama kalau bisa di ref nanti -->
   <main class="container mx-auto px-4">
     
     <!-- Bagian Featured Products -->
-    {% with featured_products=product_list|dictsort:"-is_featured" %}
-    {% if product_list|length > 0 %}
-      <section class="bg-white rounded-lg shadow p-6 mb-8">
-        <h1 class="text-2xl font-bold mb-4 text-black">Featured Products</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {% for product in product_list %}
-            {% if product.is_featured %}
-              <article class="bg-gray-100 rounded-lg p-4 shadow hover:shadow-lg transition">
-                {% if product.thumbnail %}
-                  <div class="mb-3 overflow-hidden rounded">
-                    <img src="{% if product.thumbnail.url %}{{ product.thumbnail.url }}{% else %}{{ product.thumbnail }}{% endif %}" alt="{{ product.name }}" class="w-full h-40 object-cover">
-                  </div>
-                {% endif %}
-                <h2 class="text-lg font-semibold text-gray-800 mb-1">
-                  <a href="{% url 'main:product_detail' product.id %}" class="hover:underline">{{ product.name }}</a>
-                </h2>
-                <p class="text-sm text-gray-600 mb-2">
-                  {{ product.get_category_display }}
-                  <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-300 text-black">Featured</span>
-                </p>
-                <p class="text-gray-700 mb-3">{{ product.description|truncatewords:25 }}...</p>
-                <div class="flex items-center justify-between">
-                  <a href="{% url 'main:product_detail' product.id %}" class="bg-black text-white px-3 py-1 rounded border border-black hover:bg-white hover:text-black transition">View Details</a>
-                  <span class="text-sm font-semibold text-gray-900">Rp {{ product.price }}</span>
-                </div>
-              </article>
-            {% endif %}
-          {% endfor %}
-        </div>
-      </section>
-    {% endif %}
-    {% endwith %}
-
-     <!-- Products by Category
     <section class="bg-white rounded-lg shadow p-6 mb-8">
-      <h1 class="text-2xl font-bold mb-4 text-black">Products by Category</h1>
-      {% for category_label, products in products_by_category %}
-        <h2 class="text-xl font-semibold text-black mt-6 mb-2">{{ category_label }}</h2>
-        {% if products %}
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for product in products %}
-              <article class="bg-gray-100 rounded-lg p-4 shadow hover:shadow-lg transition">
-                {% if product.thumbnail %}
-                  <div class="mb-3 overflow-hidden rounded">
-                    <img src="{% if product.thumbnail.url %}{{ product.thumbnail.url }}{% else %}{{ product.thumbnail }}{% endif %}" alt="{{ product.name }}" class="w-full h-40 object-cover">
-                  </div>
-                {% endif %}
-                <h2 class="text-lg font-semibold text-gray-800 mb-1">
-                  <a href="{% url 'main:product_detail' product.id %}" class="hover:underline">{{ product.name }}</a>
-                </h2>
-                <p class="text-sm text-gray-600 mb-2">
-                  {{ product.get_category_display }}
-                  {% if product.is_featured %}
-                    <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-300 text-black">Featured</span>
-                  {% endif %}
-                </p>
-                <p class="text-gray-700 mb-3">{{ product.description|truncatewords:25 }}...</p>
-                <div class="flex items-center justify-between">
-                  <a href="{% url 'main:product_detail' product.id %}" class="bg-black text-white px-3 py-1 rounded border border-black hover:bg-white hover:text-black transition">View Details</a>
-                  <span class="text-sm font-semibold text-gray-900">Rp {{ product.price }}</span>
-                </div>
-              </article>
-            {% endfor %}
-          </div>
-        {% else %}
-          <p class="text-gray-500">Belum ada produk di kategori ini.</p>
-        {% endif %}
-      {% endfor %}
-    </section> -->
+      <h1 class="text-2xl font-bold mb-4 text-black">Featured Products</h1>
+      {% include 'cards.html' with products=featured_products empty_message="No featured products." %}
+    </section>
+
+    
 
     <section class="bg-white rounded-lg shadow p-6">
     <div class="flex items-center justify-between mb-4">
@@ -130,35 +81,10 @@
       <h1 class="text-2xl font-bold mb-4 text-black">My Products</h1>
     {% endif %}
     {% if not product_list %}
-          <p class="text-gray-500">Belum ada produk</p>
-        {% else %}
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for product in product_list %}
-              <article class="bg-gray-100 rounded-lg p-4 shadow hover:shadow-lg transition">
-                {% if product.thumbnail %}
-                  <div class="mb-3 overflow-hidden rounded">
-                    <img src="{% if product.thumbnail.url %}{{ product.thumbnail.url }}{% else %}{{ product.thumbnail }}{% endif %}" alt="{{ product.name }}" class="w-full h-40 object-cover">
-                  </div>
-                {% endif %}
-                <h2 class="text-lg font-semibold text-gray-800 mb-1">
-                  <a href="{% url 'main:product_detail' product.id %}" class="hover:underline">{{ product.name }}</a>
-                </h2>
-                <p class="text-sm text-gray-600 mb-2">
-                  {{ product.get_category_display }}
-                  {% if product.is_featured %}
-                    <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-300 text-black">Featured</span>
-                  {% endif %}
-                </p>
-                <p class="text-gray-700 mb-3">{{ product.description|truncatewords:25 }}...</p>
-                <div class="flex items-center justify-between">
-                  <a href="{% url 'main:product_detail' product.id %}" 
-                  class="bg-black text-white px-3 py-1 rounded border border-black hover:bg-white hover:text-black transition">View Details</a>
-                  <span class="text-sm font-semibold text-gray-900">Rp {{ product.price }}</span>
-                </div>
-              </article>
-            {% endfor %}
-          </div>
-        {% endif %}
+      <p class="text-gray-500">Belum ada produk</p>
+    {% else %}
+      {% include 'cards.html' with products=product_list empty_message="Belum ada produk" %}
+    {% endif %}
     </section>
 
   </main>
@@ -176,3 +102,4 @@
 </footer>
 </body>
 </html>
+{% endblock content %}

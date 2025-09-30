@@ -1,0 +1,21 @@
+
+
+/* Dark mode (nanti) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-primary: #ffffff;
+        --color-border: #4b5563;
+        --color-bg-input: #1f2937;
+    }
+    .form-style form input,
+    .form-style form textarea,
+    .form-style form select {
+        background-color: var(--color-bg-input);
+        border-color: var(--color-border);
+        color: var(--color-primary);
+    }
+    .form-style input[type="checkbox"] {
+        background-color: var(--color-bg-input);
+        border-color: var(--color-border);
+    }
+}
