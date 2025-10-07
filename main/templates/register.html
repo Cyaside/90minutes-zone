@@ -12,23 +12,19 @@
       <p class="text-gray-500 text-sm mt-2">Create a new account to get started.</p>
     </div>
 
-    <form method="POST" class="space-y-4">
+    <form id="register-form" class="space-y-4" autocomplete="on">
       {% csrf_token %}
       <div class="space-y-3">
-        <table class="w-full text-sm text-gray-700">
-          {{ form.as_table }}
+        <table class="w-full text-sm text-gray-700">{{ form.as_table }}
           <tr>
             <td></td>
             <td>
-              <button 
-                type="submit" 
-                name="submit"
-                class="w-full text-white bg-black py-2 rounded hover:bg-white hover:text-black hover:outline hover:outline-black transition font-semibold">
-                Daftar
-              </button>
+              <button type="submit" id="register-submit" class="w-full text-white bg-black py-2 rounded hover:bg-white hover:text-black hover:outline hover:outline-black transition font-semibold">Daftar</button>
             </td>
           </tr>
         </table>
+        <div id="register-loading" class="hidden text-sm text-gray-500">Processing...</div>
+        <ul id="register-errors" class="mt-2 text-sm text-red-600 space-y-1"></ul>
       </div>
     </form>
     {% if messages %}
@@ -46,4 +42,33 @@
     </p>
   </div>
 </div>
+  <script>
+  const REGISTER_AJAX_URL = "{% url 'main:register_ajax' %}";
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const form = document.getElementById('register-form');
+    const submitBtn = document.getElementById('register-submit');
+    const loading = document.getElementById('register-loading');
+    const errorsBox = document.getElementById('register-errors');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault(); errorsBox.innerHTML=''; submitBtn.disabled=true; loading.classList.remove('hidden');
+      try {
+        const fd = new FormData(form);
+        const res = await fetch(REGISTER_AJAX_URL, {method:'POST', body: fd});
+        const j = await res.json();
+        if (j.status==='success') {
+          showToast && showToast('Register success','Silakan login','success');
+          setTimeout(()=> window.location.href = "{% url 'main:login' %}", 500);
+        } else {
+          const errs = j.errors || {}; Object.keys(errs).forEach(k=>{ const li=document.createElement('li'); li.textContent=errs[k]; errorsBox.appendChild(li); });
+          if (!Object.keys(errs).length){ const li=document.createElement('li'); li.textContent='Register failed.'; errorsBox.appendChild(li); }
+          showToast && showToast('Register failed','Periksa input','error');
+        }
+      } catch(err){
+        showToast && showToast('Network error','Tidak dapat menghubungi server','error');
+      } finally {
+        submitBtn.disabled=false; loading.classList.add('hidden');
+      }
+    });
+  });
+  </script>
 {% endblock content %}

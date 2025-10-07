@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core import serializers
 from main.productForm import ProductForm
 from main.models import Product
@@ -10,43 +10,23 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 import datetime
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
+from django.views.decorators.http import require_http_methods
+from django.middleware.csrf import get_token
 
 @login_required(login_url='/login')
 def show_main(request):
-    product_list = Product.objects.all()
-    
-    products_by_category = [
-        (label, product_list.filter(category=key))
-        for key, label in Product.CATEGORY_CHOICES
-    ]
-
-    filter_type = request.GET.get("filter", "all") 
-
-    if filter_type == "all":
-        product_list = Product.objects.all()
-        all_product = True
-        my_product = False
-    else:
-        product_list = Product.objects.filter(user=request.user)
-        all_product = False
-        my_product = True
-
-    featured_products = product_list.filter(is_featured=True)
-
+    # data fetched via ajax endpoint aja
     context = {
-        'npm' : '2406358472',
+        'npm': '2406358472',
         'name': 'Tristan Rasheed Satria',
         'class': 'PBP C',
-        'product_list': product_list,
-        'featured_products': featured_products,
-        'products_by_category': products_by_category,
         'last_login': request.COOKIES.get('last_login', 'Never'),
         'account_name': request.user.username,
-        'all_product': all_product,
-        'my_product': my_product,
     }
-
-    return render(request, "main.html", context)
+    return render(request, 'main.html', context)
 
 @login_required(login_url='/login')
 def create_product(request):
@@ -84,8 +64,25 @@ def show_xml(request):
 
 def show_json(request):
     product_list = Product.objects.all()
-    json_data = serializers.serialize("json", product_list)
-    return HttpResponse(json_data, content_type="application/json")
+    data = [
+        {
+            'id': str(product.id),
+            'name': getattr(product, 'name', None),
+            'description': getattr(product, 'description', None),
+            'category': getattr(product, 'category', None),
+            'category_display': product.get_category_display() if getattr(product, 'category', None) else None,
+            'price': getattr(product, 'price', None),
+            # Product.thumbnail is a URLField, so access directly
+            'thumbnail': getattr(product, 'thumbnail', None),
+            'views': getattr(product, 'views', 0),
+            'is_featured': getattr(product, 'is_featured', False),
+            'user_id': product.user_id,
+        }
+        for product in product_list
+    ]
+    return JsonResponse(data, safe=False)
+    # json_data = serializers.serialize("json", product_list)
+    # return HttpResponse(json_data, content_type="application/json")
 
 def show_xml_by_id(request,product_id):
    try:
@@ -102,6 +99,26 @@ def show_json_by_id(request,product_id):
        return HttpResponse(json_data, content_type="application/json")
    except Product.DoesNotExist:
        return HttpResponse(status=404)
+   
+def show_json_by_id(request, product_id):
+    try:
+        product = Product.objects.select_related('user').get(pk=product_id)
+        data = {
+            'id': str(product.id),
+            'name': getattr(product, 'name', None),
+            'description': getattr(product, 'description', None),
+            'category': getattr(product, 'category', None),
+            'category_display': product.get_category_display() if getattr(product, 'category', None) else None,
+            'price': float(product.price) if getattr(product, 'price', None) is not None else None,
+            'thumbnail': getattr(product, 'thumbnail', None),
+            'views': getattr(product, 'views', 0),
+            'is_featured': getattr(product, 'is_featured', False),
+            'user_id': product.user_id,
+            'user_username': product.user.username if product.user_id else None,
+        }
+        return JsonResponse(data, status=200)
+    except Product.DoesNotExist:
+        return JsonResponse({'detail': 'Not found'}, status=404)
    
 
 def register(request):
@@ -170,3 +187,95 @@ def delete_product(request, id):
         return HttpResponseRedirect(reverse('main:show_main'))
 
     return render(request, 'confirm_delete.html', {'product': product})
+
+
+@login_required(login_url='/login')
+@require_POST
+def add_product_ajax(request):
+    form = ProductForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    product = form.save(commit=False)
+    product.user = request.user
+    product.save()
+
+    data = {
+        'id': str(product.id),
+        'name': product.name,
+        'price': product.price,
+        'description': product.description,
+        'category': product.category,
+        'category_display': product.get_category_display(),
+        'thumbnail': product.thumbnail,
+        'is_featured': product.is_featured,
+        'views': product.views,
+        'user_username': product.user.username,
+    }
+    return JsonResponse({'status': 'success', 'product': data}, status=201)
+
+
+@login_required(login_url='/login')
+@require_http_methods(["PATCH", "POST"]) 
+def update_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id, user=request.user)
+    form = ProductForm(request.POST, instance=product)
+    if not form.is_valid():
+        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    product = form.save()
+    data = {
+        'id': str(product.id),
+        'name': product.name,
+        'price': product.price,
+        'description': product.description,
+        'category': product.category,
+        'category_display': product.get_category_display(),
+        'thumbnail': product.thumbnail,
+        'is_featured': product.is_featured,
+        'views': product.views,
+        'user_id': product.user_id,
+        'user_username': product.user.username,
+    }
+    return JsonResponse({'status': 'success', 'product': data}, status=200)
+
+
+@login_required(login_url='/login')
+@require_http_methods(["DELETE"]) 
+def delete_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id, user=request.user)
+    product.delete()
+    return JsonResponse({'status': 'success', 'id': str(id)}, status=200)
+
+
+@require_POST
+def login_ajax(request):
+    form = AuthenticationForm(data=request.POST)
+    if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        resp = JsonResponse({'status': 'success', 'username': user.username})
+        resp.set_cookie('last_login', str(datetime.datetime.now()))
+        return resp
+    return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+
+
+@require_POST
+def register_ajax(request):
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+
+
+@login_required(login_url='/login')
+@require_POST
+def logout_ajax(request):
+    logout(request)
+    response = JsonResponse({'status': 'success'})
+    response.delete_cookie('last_login')
+    return response
+
+
+@login_required(login_url='/login')
+def csrf_token_json(request):
+    return JsonResponse({'csrfToken': get_token(request)})

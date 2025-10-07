@@ -1,6 +1,11 @@
 from django.urls import path
 from . import views
-from .views import show_main, create_product, show_product, show_xml, show_json, show_xml_by_id, show_json_by_id, register, login_user, logout_user, edit_product,delete_product
+from .views import (
+    show_main, create_product, show_product, show_xml, show_json, show_xml_by_id,
+    show_json_by_id, register, login_user, logout_user, edit_product, delete_product,
+    add_product_ajax, update_product_ajax, delete_product_ajax, login_ajax,
+    register_ajax, logout_ajax, csrf_token_json
+)
 app_name = 'main'
 
 urlpatterns = [
@@ -16,4 +21,11 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('login/', login_user, name='login'),
     path('logout/', logout_user, name='logout'),
+    path('ajax/add-product/', add_product_ajax, name='add_product_ajax'),
+    path('ajax/update-product/<str:id>/', update_product_ajax, name='update_product_ajax'),
+    path('ajax/delete-product/<str:id>/', delete_product_ajax, name='delete_product_ajax'),
+    path('ajax/login/', login_ajax, name='login_ajax'),
+    path('ajax/register/', register_ajax, name='register_ajax'),
+    path('ajax/logout/', logout_ajax, name='logout_ajax'),
+    path('ajax/csrf/', csrf_token_json, name='csrf_token_json'),
 ]

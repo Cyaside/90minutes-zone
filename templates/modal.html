@@ -1,0 +1,137 @@
+<!-- Product Create Modal -->
+<div id="crudModal" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="crudModalContent" class="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto transform transition-all duration-150 ease-out opacity-0 scale-95">
+    <!-- Header -->
+    <div class="flex items-start justify-between p-5 border-b">
+      <div>
+  <h3 id="modalTitle" class="text-2xl font-bold text-black">Add Product</h3>
+        <p class="text-sm text-gray-500 mt-1">Isi detail produk untuk ditambahkan ke katalog</p>
+      </div>
+      <button type="button" class="text-gray-400 hover:text-black hover:bg-gray-100 rounded-md p-2 transition" onclick="hideModal()" aria-label="Close">
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
+    <!-- Body -->
+  <form id="productForm" action="{% url 'main:add_product_ajax' %}" method="POST" class="p-6 space-y-5" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <!-- Name -->
+      <div>
+        <label for="name" class="block font-semibold text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
+        <input id="name" name="name" type="text" required placeholder="e.g. Adidas Predator"
+               class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition" />
+        <p data-error-for="name" class="mt-1 text-xs text-red-500 hidden"></p>
+      </div>
+      <!-- Price -->
+      <div>
+        <label for="price" class="block font-semibold text-gray-700 mb-1">Price (IDR) <span class="text-red-500">*</span></label>
+        <input id="price" name="price" type="number" min="0" required placeholder="e.g. 670000"
+               class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition" />
+        <p data-error-for="price" class="mt-1 text-xs text-red-500 hidden"></p>
+      </div>
+      <!-- Description -->
+      <div>
+        <label for="description" class="block font-semibold text-gray-700 mb-1">Description <span class="text-red-500">*</span></label>
+        <textarea id="description" name="description" rows="3" required placeholder="Tuliskan deskripsi produk"
+                  class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition"></textarea>
+        <p data-error-for="description" class="mt-1 text-xs text-red-500 hidden"></p>
+      </div>
+      <!-- Thumbnail -->
+      <div>
+        <label for="thumbnail" class="block font-semibold text-gray-700 mb-1">Thumbnail URL</label>
+        <input id="thumbnail" name="thumbnail" type="url" placeholder="https://example.com/image.jpg"
+               class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition" />
+      </div>
+      <!-- Category -->
+      <div>
+        <label for="category" class="block font-semibold text-gray-700 mb-1">Category <span class="text-red-500">*</span></label>
+        <select id="category" name="category" required
+                class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition">
+          <option value="" selected disabled>Pilih kategori</option>
+          <option value="footwear">Footwear</option>
+          <option value="kit">Kit</option>
+          <option value="shorts and pants">Shorts and Pants</option>
+          <option value="jackets and sportswear">Jackets and Sportswear</option>
+          <option value="tracksuits">Tracksuits</option>
+          <option value="others">Others</option>
+        </select>
+        <p data-error-for="category" class="mt-1 text-xs text-red-500 hidden"></p>
+      </div>
+      <!-- Featured -->
+      <div class="flex items-center gap-2">
+        <input id="is_featured" name="is_featured" type="checkbox" class="w-5 h-5 text-black focus:ring-black rounded border-gray-300" />
+        <label for="is_featured" class="text-sm font-medium text-gray-800">Featured Product</label>
+      </div>
+      <!-- Footer Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t">
+        <button type="button" onclick="hideModal()" class="order-2 sm:order-1 px-6 py-2 border border-gray-300 text-gray-700 rounded font-medium hover:bg-gray-100 transition">Cancel</button>
+  <button type="submit" class="order-1 sm:order-2 flex-1 bg-black text-white px-6 py-2 rounded font-semibold hover:bg-white hover:text-black hover:outline hover:outline-black transition">Add Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function showModal() {
+    const modal = document.getElementById('crudModal');
+    const modalContent = document.getElementById('crudModalContent');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      modalContent.classList.remove('opacity-0', 'scale-95');
+      modalContent.classList.add('opacity-100', 'scale-100');
+    });
+  }
+
+  function hideModal() {
+    const modal = document.getElementById('crudModal');
+    const modalContent = document.getElementById('crudModalContent');
+    // Reset edit state
+    const form = document.getElementById('productForm');
+    if (form) {
+      delete form.dataset.editingId;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.textContent = 'Add Product';
+      const title = document.getElementById('modalTitle');
+      if (title) title.textContent = 'Add Product';
+    }
+    modalContent.classList.remove('opacity-100', 'scale-100');
+    modalContent.classList.add('opacity-0', 'scale-95');
+    setTimeout(() => modal.classList.add('hidden'), 160);
+  }
+
+  async function addProductEntry() {
+    const form = document.getElementById('productForm');
+    if (!form) return false;
+    const res = await fetch(form.getAttribute('action'), {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    if (!res.ok) {
+      showToast && showToast('Gagal menambahkan produk', 'Periksa kembali input Anda.', 'error');
+      return false;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (data.status !== 'success') {
+      showToast && showToast('Gagal menambahkan produk', 'Validasi gagal.', 'error');
+      return false;
+    }
+    form.reset();
+    hideModal();
+    showToast && showToast('Product added successfully!', '', 'success');
+    document.dispatchEvent(new CustomEvent('productAdded', { detail: data.product }));
+  return true;
+  }
+
+  const productFormEl = document.getElementById('productForm');
+  if (productFormEl) {
+    productFormEl.addEventListener('submit', function(e) {
+      if (productFormEl.dataset.editingId || productFormEl.dataset.processingEdit){
+        return; 
+      }
+      e.preventDefault();
+      addProductEntry();
+    });
+  }
+</script>

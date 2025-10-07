@@ -7,99 +7,319 @@
 
 {% block content %}
 {% include 'navbar.html' %}
-<!-- <!doctype html>
-<html lang="id">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" type="image/png" href="{% static '/90MinutesZoneLogo.png' %}">
-</head> -->
 
 <div class="bg-gray-50 w-full pt-16 min-h-screen">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Navbar-->
-  <!-- <nav class="bg-white shadow mb-8">
-    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <img src="{% static '/90MinutesZoneLogo.png' %}" alt="90Minutes Zone logo" class="h-10 w-10 rounded-full">
-        <span class="font-bold text-xl text-black">90Minutes Zone</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <a href="/" class="text-black hover:text-gray-700 font-medium">Home</a>
-        <a href="{% url 'main:create_product' %}" class="bg-black text-white px-4 py-2 rounded border border-black hover:bg-white hover:text-black transition">Add Product</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'main:logout' %}" class="bg-red-500 text-white px-4 py-2 rounded border border-red-500 hover:bg-white hover:text-red-500 transition">Logout</a>
-        {% else %}
-          <a href="{% url 'main:login' %}" class="bg-blue-500 text-white px-4 py-2 rounded border border-blue-500 hover:bg-white hover:text-blue-500 transition">Login</a>
-        {% endif %}
-      </div>
-    </div>
-  </nav> -->
-      <!-- Header Section -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome to 90MinutesZone!</h1>
-      <p class="text-gray-600 mb-4">Your one-stop shop for exclusive football merchandise, gear, and collectibles</p>
-    </div>
-    
-  <!-- Utama kalau bisa di ref nanti -->
-  <main class="container mx-auto px-4">
-    
-    <!-- Bagian Featured Products -->
-    <section class="bg-white rounded-lg shadow p-6 mb-8">
-      <h1 class="text-2xl font-bold mb-4 text-black">Featured Products</h1>
-      {% include 'cards.html' with products=featured_products empty_message="No featured products." %}
-    </section>
 
-    
-
-    <section class="bg-white rounded-lg shadow p-6">
-    <div class="flex items-center justify-between mb-4">
-      <!-- Filter -->
-      <div role="tablist" aria-label="Filter products" class="inline-flex rounded-lg p-1">
-        <a href="?filter=all" role="tab" aria-selected="{% if all_product %}true{% else %}false{% endif %}"
-           class="px-4 py-2 text-sm font-medium rounded-l-lg transition-colors border border-black
-           {% if all_product %}bg-black text-white{% else %}bg-white text-black hover:bg-black hover:text-white{% endif %}">
-          All Products
-        </a>
-        <a href="?filter=my" role="tab" aria-selected="{% if my_product %}true{% else %}false{% endif %}"
-           class="px-4 py-2 text-sm font-medium rounded-r-lg transition-colors border border-black
-           {% if my_product %}bg-black text-white{% else %}bg-white text-black hover:bg-black hover:text-white{% endif %}">
-          My Products
-        </a>
+  <div class="bg-gray-50 w-full pt-16 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome to 90MinutesZone!</h1>
+        <p class="text-gray-600 mb-4">Your one-stop shop for exclusive football merchandise, gear, and collectibles</p>
       </div>
 
-      
-      <div class="text-sm text-gray-600">
-        <span class="font-semibold">Showing {{ product_list|length }} products</span>
-      </div>
-    </div>
-
-    {% if all_product %}
-      <h1 class="text-2xl font-bold mb-4 text-black">All Products</h1>
-    {% elif my_product %}
-      <h1 class="text-2xl font-bold mb-4 text-black">My Products</h1>
-    {% endif %}
-    {% if not product_list %}
-          <div class="w-32 h-32 mx-auto mb-4">
-          <img src="{% static 'no-product.png' %}" alt="No Product Available" class="w-full h-full object-contain">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <button onclick="showModal()" class="inline-flex items-center px-4 py-2 bg-black text-white font-semibold rounded-md hover:bg-white hover:text-black hover:outline hover:outline-black transition-colors">
+          Create Product (AJAX)
+        </button>
+        <div class="flex items-center gap-2">
+          <button id="filter-all" class="px-3 py-1.5 text-sm rounded border border-black bg-black text-white font-medium" aria-pressed="true">All</button>
+          <button id="filter-my" class="px-3 py-1.5 text-sm rounded border border-black bg-black text-white font-medium " aria-pressed="true">My</button>
         </div>
-    {% else %}
-      {% include 'cards.html' with products=product_list empty_message="Belum ada produk" %}
-    {% endif %}
-    </section>
+        <button id="refresh-products" class="px-3 py-1.5 text-sm rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">Refresh</button>
+        <span id="inline-refresh" class="hidden text-sm text-gray-500">Refreshing...</span>
+      </div>
 
-  </main>
-  <footer class="bg-white shadow mt-8">
-    <div class="container mx-auto text-center text-gray-600">
-      Account :  {{account_name}} 
-    </div>
-    <div class="container mx-auto text-center text-gray-600">
-      Last login : {{last_login}}
-    </div>
-    <div class="container mx-auto px-4 py-4 text-center text-gray-600">
-      Made by {{name}} - {{npm}} - {{class}}
+      <section class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-black">Featured Products</h2>
+        <div id="featured-loading" class="text-sm text-gray-500">Loading featured...</div>
+        <div id="featured-empty" class="hidden text-sm text-gray-500">No featured products.</div>
+        <div id="featured-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+
+      <section class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-start justify-between mb-4">
+          <h2 class="text-2xl font-bold text-black" id="list-title">All Products</h2>
+          <span class="text-sm text-gray-600">Showing <span id="product-count">0</span> products</span>
+        </div>
+        <div id="list-loading" class="text-center py-8 text-gray-500">Loading products...</div>
+        <div id="list-error" class="hidden text-center py-8 text-red-600"></div>
+        <div id="list-empty" class="hidden text-center py-12 text-gray-600">
+          <div class="w-32 h-32 mx-auto mb-4">
+            <img src="{% static 'no-product.png' %}" alt="No Product Available" class="w-full h-full object-contain">
+          </div>
+          <p>No products yet. Create one!</p>
+        </div>
+        <div id="dynamic-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
     </div>
 
-</footer>
-{% endblock content %}
+    <footer class="bg-white shadow mt-8">
+      <div class="container mx-auto text-center text-gray-600">Account : {{account_name}}</div>
+      <div class="container mx-auto text-center text-gray-600">Last login : {{last_login}}</div>
+      <div class="container mx-auto px-4 py-4 text-center text-gray-600">Made by {{name}} - {{npm}} - {{class}}</div>
+    </footer>
+  </div>
+
+  <!-- Delete -->
+  <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 py-8 bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-md relative bg-white/90 backdrop-blur border rounded-2xl shadow-xl p-8 overflow-hidden">
+      <div class="absolute -top-20 -right-16 w-64 h-64"></div>
+      <div class="relative">
+        <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">Delete Product</h2>
+        <p id="deleteModalMessage" class="text-gray-600 text-sm leading-relaxed mb-6"></p>
+        <div class="flex items-center gap-3">
+          <button id="deleteConfirmBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition">Yes, delete</button>
+          <button id="deleteCancelBtn" class="flex-1 text-center px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium shadow-sm focus:outline-none focus:ring">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const PRODUCTS_API_ENDPOINT = "{% url 'main:show_json' %}";
+  const AUTH_USER_ID = "{{ user.id|default_if_none:'' }}";
+  const CSRF_ENDPOINT = "{% url 'main:csrf_token_json' %}";
+  const UPDATE_ENDPOINT_TEMPLATE = `{% url 'main:update_product_ajax' '00000000-0000-0000-0000-000000000000' %}`;
+  const DELETE_ENDPOINT_TEMPLATE = `{% url 'main:delete_product_ajax' '00000000-0000-0000-0000-000000000000' %}`;
+
+  let productDataCache = [];
+  let activeProductFilter = 'all';
+
+  async function fetchCsrf(){
+    try { const r = await fetch(CSRF_ENDPOINT); const j = await r.json(); return j.csrfToken; } catch { return ''; }
+  }
+
+  function currency(idr){
+    const n = Number(idr);
+    if (isNaN(n)) {
+      return idr;
+    }
+    return new Intl.NumberFormat('id-ID').format(n);
+  }
+
+  function buildCard(p){
+    const el = document.createElement('article');
+    el.className = 'group relative bg-gray-100 rounded-lg p-4 shadow hover:shadow-lg transition flex flex-col h-full';
+    const linkDetail = `{% url 'main:product_detail' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', p.id);
+    const thumb = p.thumbnail ? `<div class="mb-3 overflow-hidden rounded aspect-video bg-gray-200"><img src="${p.thumbnail}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.remove()"></div>` : `<div class='mb-3 flex items-center justify-center aspect-video rounded bg-gray-200 text-gray-500 text-sm font-medium'>No Image</div>`;
+    const badge = p.is_featured ? `<span class='ml-2 align-middle text-[10px] font-semibold px-2 py-0.5 rounded-full bg-yellow-300 text-black'>Featured</span>` : '';
+    const owner = (AUTH_USER_ID && Number(AUTH_USER_ID) === Number(p.user_id)) ? `
+      <div class='flex items-center justify-between pt-4 border-t border-gray-100'>
+        <div class='flex space-x-2'>
+          <button class='text-gray-600 hover:text-gray-700 text-sm' data-edit='${p.id}'>Edit</button>
+          <button class='text-red-600 hover:text-red-700 text-sm' data-delete='${p.id}'>Delete</button>
+        </div>
+      </div>` : '';
+    el.innerHTML = `
+      ${thumb}
+      <header class='mb-2'>
+        <h2 class='text-lg font-semibold text-gray-800 leading-tight'><a href='${linkDetail}' class='hover:underline'>${p.name}</a></h2>
+        <p class='text-xs text-gray-600 mt-0.5'>${p.category_display || p.category || ''} ${badge}</p>
+      </header>
+      <p class='text-gray-700 text-sm mb-3 line-clamp-3'>${(p.description||'').split(' ').slice(0,25).join(' ')}...</p>
+      <div class='mt-auto flex items-center justify-between gap-2 pt-2'>
+        <a href='${linkDetail}' class='bg-black text-white px-3 py-1 rounded border border-black hover:bg-white hover:text-black transition text-sm'>View Details</a>
+        <span class='text-sm font-semibold text-gray-900'>Rp ${currency(p.price)}</span>
+      </div>
+      ${owner}
+    `;
+    return el;
+  }
+
+  function renderLists(){
+    const listEl = document.getElementById('dynamic-products');
+    const featuredWrap = document.getElementById('featured-products');
+    const featLoading = document.getElementById('featured-loading');
+    const featEmpty = document.getElementById('featured-empty');
+    const listEmpty = document.getElementById('list-empty');
+    const countEl = document.getElementById('product-count');
+    if (!listEl) return;
+
+    listEl.innerHTML='';
+    featuredWrap.innerHTML='';
+
+    featLoading.classList.add('hidden');
+
+    const filtered = activeProductFilter === 'all' ? productDataCache : productDataCache.filter(p => Number(p.user_id) === Number(AUTH_USER_ID));
+    countEl.textContent = filtered.length;
+    document.getElementById('list-title').textContent = activeProductFilter === 'all' ? 'All Products' : 'My Products';
+
+    const sourcePool = activeProductFilter === 'all' ? productDataCache : filtered; 
+    const featuredFiltered = sourcePool.filter(p=>p.is_featured);
+    if (featuredFiltered.length === 0) {
+      featEmpty.classList.remove('hidden');
+    } else {
+      featEmpty.classList.add('hidden');
+      featuredFiltered.forEach(p=> featuredWrap.appendChild(buildCard(p)));
+    }
+
+    if (filtered.length === 0) {
+      listEmpty.classList.remove('hidden');
+    } else {
+      listEmpty.classList.add('hidden');
+      filtered.forEach(p=> listEl.appendChild(buildCard(p)));
+    }
+  }
+
+  async function fetchProducts(){
+    const loading = document.getElementById('list-loading');
+    const errorBox = document.getElementById('list-error');
+    const featLoading = document.getElementById('featured-loading');
+    const featEmpty = document.getElementById('featured-empty');
+    loading.classList.remove('hidden');
+    errorBox.classList.add('hidden');
+    featEmpty.classList.add('hidden');
+    featLoading.classList.remove('hidden');
+    try {
+      const res = await fetch(PRODUCTS_API_ENDPOINT, {headers:{'Accept':'application/json'}});
+      if (!res.ok) throw new Error('Failed');
+      productDataCache = await res.json();
+      renderLists();
+    } catch (e){
+      errorBox.textContent = 'Failed to load products.';
+      errorBox.classList.remove('hidden');
+    } finally {
+      loading.classList.add('hidden');
+    }
+  }
+
+  // Event wiringnya
+  document.addEventListener('DOMContentLoaded', ()=>{
+    fetchProducts();
+    document.getElementById('refresh-products').addEventListener('click', async ()=>{
+      const badge = document.getElementById('inline-refresh');
+      badge.classList.remove('hidden');
+      await fetchProducts();
+      badge.classList.add('hidden');
+      showToast && showToast('List refreshed','Data terbaru dimuat','success');
+    });
+    document.getElementById('filter-all').addEventListener('click',()=>{
+      activeProductFilter='all';
+      document.getElementById('filter-all').classList.add('bg-black','text-white');
+      document.getElementById('filter-my').classList.remove('bg-black','text-white');
+      renderLists();
+    });
+    document.getElementById('filter-my').addEventListener('click',()=>{
+      activeProductFilter='my';
+      document.getElementById('filter-my').classList.add('bg-black','text-white');
+      document.getElementById('filter-all').classList.remove('bg-black','text-white');
+      renderLists();
+    });
+
+    // edit/delete
+    document.body.addEventListener('click', (e)=>{
+      const editId = e.target.getAttribute('data-edit');
+      const delId = e.target.getAttribute('data-delete');
+      if (editId){
+        const p = productDataCache.find(x=>x.id===editId); if (p) openEditModal(p);
+      }
+      if (delId){
+        const p = productDataCache.find(x=>x.id===delId); if (p) openDeleteConfirm(p);
+      }
+    });
+  });
+
+  // Modal helpers
+  function openEditModal(p){
+    showModal();
+    // Switch title & submit button text
+    const title = document.getElementById('modalTitle');
+    if (title) title.textContent = 'Edit Product';
+    const form = document.getElementById('productForm');
+    if (!form) return;
+    form.querySelector('#name').value = p.name || '';
+    form.querySelector('#price').value = p.price || '';
+    form.querySelector('#description').value = p.description || '';
+    form.querySelector('#thumbnail').value = p.thumbnail || '';
+    form.querySelector('#category').value = p.category || '';
+    form.querySelector('#is_featured').checked = !!p.is_featured;
+    form.dataset.editingId = p.id;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.textContent = 'Update Product';
+  }
+
+  async function submitEdit(form){
+    const id = form.dataset.editingId; if (!id) return false;
+    const csrf = await fetchCsrf();
+    const fd = new FormData(form);
+    const url = UPDATE_ENDPOINT_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', id);
+    const res = await fetch(url, {method:'POST', headers:{'X-CSRFToken': csrf}, body: fd});
+    const j = await res.json();
+    if (j.status==='success'){
+      const idx = productDataCache.findIndex(p=>p.id===id); if (idx>=0) productDataCache[idx] = j.product;
+      renderLists();
+      hideModal();
+      showToast && showToast('Product updated','Berhasil mengubah produk','success');
+    } else {
+      showToast && showToast('Gagal update','Periksa input','error');
+    }
+  }
+
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const form = document.getElementById('productForm');
+    if (!form) return;
+    form.addEventListener('submit', async (e)=>{
+      if (form.dataset.editingId){
+        e.preventDefault();
+        form.dataset.processingEdit = '1';
+        await submitEdit(form);
+        delete form.dataset.processingEdit;
+      }
+    }, {capture:true});
+  });
+
+  // Delete confirmation modal dgn conforim_delete
+  let deleteTargetId = null;
+  function openDeleteConfirm(p){
+    deleteTargetId = p.id;
+    const modal = document.getElementById('deleteModal');
+    const msg = document.getElementById('deleteModalMessage');
+    if (msg) msg.textContent = `Are you sure you want to delete "${p.name}"? This action is permanent.`;
+    modal.classList.remove('hidden');
+  }
+  function closeDeleteModal(){
+    const modal = document.getElementById('deleteModal');
+    modal.classList.add('hidden');
+    deleteTargetId = null;
+  }
+  async function executeDelete(){
+    if (!deleteTargetId) return;
+    const csrf = await fetchCsrf();
+    const url = DELETE_ENDPOINT_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', deleteTargetId);
+    try {
+      const res = await fetch(url, {method:'DELETE', headers:{'X-CSRFToken': csrf}});
+      const j = await res.json();
+      if (j.status==='success'){
+        productDataCache = productDataCache.filter(p=>p.id!==deleteTargetId);
+        renderLists();
+        showToast && showToast('Product deleted','Produk dihapus','success');
+        closeDeleteModal();
+      } else {
+        showToast && showToast('Gagal hapus','Terjadi kesalahan','error');
+      }
+    } catch(e){
+      showToast && showToast('Network error','Tidak dapat menghapus','error');
+    }
+  }
+  // Wire modal buttons
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const delConfirm = document.getElementById('deleteConfirmBtn');
+    const delCancel = document.getElementById('deleteCancelBtn');
+    delConfirm?.addEventListener('click', ()=> executeDelete());
+    delCancel?.addEventListener('click', ()=> closeDeleteModal());
+    // Close on ESC
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !document.getElementById('deleteModal').classList.contains('hidden')) closeDeleteModal();});
+    // Click outside to close
+    document.getElementById('deleteModal').addEventListener('click', (e)=>{ if(e.target.id==='deleteModal') closeDeleteModal(); });
+  });
+
+  // Listen to add event from create
+  document.addEventListener('productAdded', (e)=>{
+    if (!e.detail) return;
+    if (!productDataCache.find(p=>p.id===e.detail.id)) productDataCache.unshift(e.detail);
+    renderLists();
+  });
+  </script>
+
+  {% endblock content %}

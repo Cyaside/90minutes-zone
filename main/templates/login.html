@@ -11,17 +11,12 @@
       <h1 class="text-3xl font-bold text-gray-800">Login</h1>
       <p class="text-gray-500 text-sm mt-2">Welcome back! Please enter your details</p>
     </div>
-    <form method="POST" action="" class="space-y-4">
+    <form id="login-form" class="space-y-4" autocomplete="on">
       {% csrf_token %}
-
-      <div class="space-y-3">
-        {{ form.as_p }}
-      </div>
-      <button 
-        type="submit" 
-        class="w-full text-white bg-black py-2 rounded hover:bg-white hover:text-black hover:outline hover:outline-black transition font-semibold">
-        Login
-      </button>
+      <div class="space-y-3">{{ form.as_p }}</div>
+      <button type="submit" id="login-submit" class="w-full text-white bg-black py-2 rounded hover:bg-white hover:text-black hover:outline hover:outline-black transition font-semibold">Login</button>
+      <div id="login-loading" class="hidden text-sm text-gray-500 text-center">Processing...</div>
+      <ul id="login-errors" class="mt-2 text-sm text-red-600 space-y-1"></ul>
     </form>
     {% if messages %}
     <div class="mt-4">
@@ -38,4 +33,40 @@
     </p>
   </div>
 </div>
+  <script>
+  const LOGIN_AJAX_URL = "{% url 'main:login_ajax' %}";
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const form = document.getElementById('login-form');
+    const submitBtn = document.getElementById('login-submit');
+    const loading = document.getElementById('login-loading');
+    const errorsBox = document.getElementById('login-errors');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      errorsBox.innerHTML='';
+      submitBtn.disabled = true; loading.classList.remove('hidden');
+      try {
+        const fd = new FormData(form);
+        const res = await fetch(LOGIN_AJAX_URL, {method:'POST', body: fd});
+        const j = await res.json();
+        if (j.status === 'success') {
+          showToast && showToast('Login success', '', 'success');
+          setTimeout(()=> window.location.href = "{% url 'main:show_main' %}", 400);
+        } else {
+          const errs = j.errors || {};
+          Object.keys(errs).forEach(k=>{
+            const li = document.createElement('li'); li.textContent = errs[k]; errorsBox.appendChild(li);
+          });
+          if (!Object.keys(errs).length){
+            const li = document.createElement('li'); li.textContent='Login failed.'; errorsBox.appendChild(li);
+          }
+          showToast && showToast('Login failed','Periksa kredensial','error');
+        }
+      } catch(err){
+        showToast && showToast('Network error','Tidak dapat menghubungi server','error');
+      } finally {
+        submitBtn.disabled=false; loading.classList.add('hidden');
+      }
+    });
+  });
+  </script>
 {% endblock content %}

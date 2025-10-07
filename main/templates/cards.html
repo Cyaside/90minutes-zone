@@ -30,8 +30,8 @@
 					{% if user.is_authenticated and product.user == user %}
 						<div class="flex items-center justify-between pt-4 border-t border-gray-100">
 							<div class="flex space-x-2">
-								<a href="{% url 'main:edit_product' product.id %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">Edit</a>
-								<a href="{% url 'main:delete_product' product.id %}" class="text-red-600 hover:text-red-700 text-sm transition-colors">Delete</a>
+								<button type="button" data-edit="{{ product.id }}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">Edit</button>
+								<button type="button" data-delete="{{ product.id }}" class="text-red-600 hover:text-red-700 text-sm transition-colors">Delete</button>
 							</div>
 						</div>
 					{% endif %}

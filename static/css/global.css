@@ -1,7 +1,66 @@
+/* 
+
+.navbar {
+    background-color: #16a34a;
+    padding: 10px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+.logo img{
+    height: 40px;
+    display: flex;
+}
+.logo h1{
+    color: white; 
+    margin: 0;
+    font-weight: bold;
+}
+
+.nav-links a{
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-links a:hover{
+    background-color: yellow;
+    color: black;
+    font-size: 18px;
+} */
+/* Marla Marlena
+7:47 PM
+Buatlah struktur HTML sederhana untuk menampilkan navigation bar yang berisi teks, tombol untuk navigasi, dan gambar kecil. Gunakan CSS untuk memberi styling pada navbar.  
+
+Answer guideline: 
+
+Buat struktur HTML: 
+Buat sebuah elemen <div> sebagai wadah utama untuk navigation bar. 
+Di dalam wadah tersebut, tambahkan: 
+Sebuah gambar kecil (<img>). 
+Sebuah teks judul/nama website (<span> atau <h1>). 
+
+Beberapa tombol/tautan navigasi (<a>). 
+
+Tambahkan styling CSS: 
+Buat file CSS terpisah dan tautkan ke file HTML. 
+Gaya yang harus diterapkan: 
+Navigation bar (.navbar): tambahkan background color, padding, dan atur agar isi tersusun horizontal dengan flex, logo di kiri, menu di kanan. 
+Logo (.logo): atur agar gambar dan teks sejajar. 
+Gambar logo (.logo img): atur ukuran kecil (misalnya tinggi 40px). 
+Teks judul (.logo h1): beri warna putih, margin 0, dan atur font bold. 
+Tombol navigasi (.nav-links a): beri warna putih, padding, hilangkan underline, font bold, serta tambahkan efek hover. */
 
 
 /* Dark mode (nanti) */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
     :root {
         --color-primary: #ffffff;
         --color-border: #4b5563;
@@ -18,4 +77,4 @@
         background-color: var(--color-bg-input);
         border-color: var(--color-border);
     }
-}
+} */
