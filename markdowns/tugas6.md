@@ -16,8 +16,8 @@ Keuntungannya tidak perlu reload seluruh halaman bisa bagian tertentu saja dan A
 
 ## Bagaimana cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django?
 
-Sama seperti biasanya caranya bisa memakai CSRF Token, Menggunakan HTTPS, Validasi data (seperti biasa) dan terakhir gunakan django authentication sistem (daripada buat sendiri) dan masih banyak lagi sebenarnya
+Sama seperti biasanya caranya bisa memakai CSRF Token, Menggunakan HTTPS, Validasi data (seperti biasa) dan terakhir gunakan django authentication sistem (daripada buat sendiri) dan masih banyak lagi sebenarnya. Untuk tambahan kita bisa membatasi verifikasi respons AJAX, batasi request rate atau bisa gunakan token based authentication (Seperti JWT).
 
 ## Bagaimana AJAX mempengaruhi pengalaman pengguna (User Experience) pada website?
 
-Ajax dapat membuat website terasa lebih cepat, interaktif dan responsif karena dapat memperbarui data di sebagian halaman tanpa membuat seluruh halaman dan ini berpengaruh dari sisi kecepatan dan kenyaman interaksi pengguna
+Ajax dapat membuat website terasa lebih cepat, interaktif dan responsif karena dapat memperbarui data di sebagian halaman tanpa membuat seluruh halaman dan ini berpengaruh ke pengalaman pengguna dimana membuat interaksi terasa lebih mulus, waktu tunggunya berkurang dan alur penggunaannya terasa lebih mulus

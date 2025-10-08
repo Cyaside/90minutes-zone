@@ -26,5 +26,5 @@ https://tristan-rasheed-90minuteszone.pbp.cs.ui.ac.id/
 1️⃣ [Tugas 2 Markdown](markdowns/tugas2.md)  
 2️⃣ [Tugas 3 Markdown](markdowns/tugas3.md)  
 3️⃣ [Tugas 4 Markdown](markdowns/tugas4.md)  
-4️⃣ [Tugas 5 Markdown](markdowns/tugas5.md)
+4️⃣ [Tugas 5 Markdown](markdowns/tugas5.md)  
 5️⃣ [Tugas 6 Markdown](markdowns/tugas6.md)
